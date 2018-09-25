@@ -29,6 +29,7 @@
 1. Build amUtils.RSA 
 2. Build amUtils.RSA.Wrapper (x86 o x64)
 3. Listo/All done
+
 `Con los pasos anteriores obtendras amUtils.RSA.dll, crypto.dll (ambos en Any CPU) y amUtils.RSA.Wrapper.dll (o amUtils.RSA.Wrapperx32.dll dependiento del build que escogas)`
 
 `Follow the steps above you gonna get amUtils.RSA.dll, crypto.dll (both Any CPU) and amUtils.RSA.Wrapper.dll (or amUtils.RSA.Wrapperx32.dll depends of build you chose)` 
@@ -39,7 +40,7 @@
 
 ` La forma mas simple es usar UnmanagedExports y exponer los metodos, sin embargo UnmanagedExports NO soporta Framework 4.6, BouncyCastle usa 4.6` 
 
-` La solucion mas optima fue hacer un Wrapper en Framework 4.0. Cargar dinamicamente la DLL amUtils.RSA.dll ( necesita crypto.dll ) usando amUtils.RSA.Wrapper, finalmente exponer los metodos como C++ usando UnmanagedExports
+` La solucion mas optima fue hacer un Wrapper en Framework 4.0. Cargar dinamicamente la DLL amUtils.RSA.dll ( necesita crypto.dll ) usando amUtils.RSA.Wrapper, finalmente exponer los metodos como C++ usando UnmanagedExports`
 
 ```
 English
