@@ -1,0 +1,4 @@
+C:\C#\RSA\amUtils.RSA.Test\amUtils.RSA.Test\bin\Debug\amUtils.RSA.Test.exe
+C:\C#\RSA\amUtils.RSA.Test\amUtils.RSA.Test\bin\Debug\amUtils.RSA.Test.pdb
+C:\C#\RSA\amUtils.RSA.Test\amUtils.RSA.Test\obj\Debug\amUtils.RSA.Test.exe
+C:\C#\RSA\amUtils.RSA.Test\amUtils.RSA.Test\obj\Debug\amUtils.RSA.Test.pdb
