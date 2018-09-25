@@ -52,7 +52,7 @@ English
 ` Then I make amtUtils.RSA.Wrapper using Framework 4.0 to load dinamycally amUtils.RSA.dll (needs cryto.dll) and then expose those methods using UnmanagedExports like C++`
 
 ## Recursos/ Sources
-### Para lograr todo lo anterior use/modifique los siguiente / To get all these I use/modify next
+### Para lograr todo lo anterior use/modifique / To make this posible I use/modify
 
 [UnmanagedExports](https://www.nuget.org/packages/UnmanagedExports).
 [stulzq](https://github.com/stulzq/RSAUtil)
