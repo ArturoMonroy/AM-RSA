@@ -16,19 +16,44 @@ namespace amUtils.RSA.DLL
         static Assembly assembly =  Assembly.LoadFrom(DLL);
         static Type type = assembly.GetType("amUtils.RSA.Operaciones");
         
-        
-        string _AYUDA_ =
-            "1.- Generador de Llaves RSA en formato XML (Net), PKCS_1 y PKCS_8. 2048 Longitud por defecto de las llaves  \n" +
-            "2.- Encripta y Desencripta Paddig usado por defecto es PKCS1\n" +
-            "3.- Convierte Llave Privada PKCS8 a PKCS1 (Llave publica NO necesita conversion)\n" +
-            "\nEJEMPLOS DE USO\n" +
-            "\n====Generar llaves RSA====\n" +
-            "RSA genera <xml|PKCS1|PKCS8> [<longitud>]\n" +
-            "\n====Encripta/DesEncripta====\n" +
-            "RSA encripta    <texto>   <tipo> (XML|PKCS1|PKCS8) <llavePublica> [longitud]\n" +
-            "RSA desencripta <cifrado> <tipo> (XML|PKCS1|PKCS8) <llavePrivada> [longitud]\n" +
-            "\n====Convierte====\n" +
-            "RSA PKCS8_A_PKCS1 <llavePrivadaPKCS_8>";
+        [DllExport("Version", CallingConvention = CallingConvention.Cdecl)]
+        public static void Version([MarshalAs(UnmanagedType.BStr)] out string version)
+        {
+            version = "1.0.0.1";
+        }
+
+        [DllExport("Firma", CallingConvention = CallingConvention.Cdecl)]
+        public static int Firma(IntPtr PEM_P, IntPtr data_P, [MarshalAs(UnmanagedType.BStr)] out string signature)
+        {
+            string result;
+            string[] a;
+            int n = -1;
+            MethodInfo methodInfo;
+            string PEM;
+            string data;
+
+            try
+            {
+                PEM = Marshal.PtrToStringAuto(PEM_P);
+                data = Marshal.PtrToStringAuto(data_P);
+
+                methodInfo = type.GetMethod("Firma", new Type[] { typeof(string), typeof(string) });
+
+                result = (string)methodInfo.Invoke(null, new object[] { PEM, data });
+
+                a = result.Split(',');
+                int.TryParse(a[0], out n);
+                signature = a[1];
+
+            }
+            catch (Exception e)
+            {
+                signature = string.Format("Error no esperado [{0}]", e.Message);
+            }
+            
+            return n;
+
+        }
 
         [DllExport("Genera", CallingConvention = CallingConvention.Cdecl)]
         public static int Genera(IntPtr tipo_P, int longitud, [MarshalAs(UnmanagedType.BStr)] out string llavePrivada, [MarshalAs(UnmanagedType.BStr)] out string llavePublica)

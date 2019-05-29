@@ -1,0 +1,7 @@
+BouncyCastle_Crypto
+
+*.dll
+*.exe
+/*.suo
+bin
+obj

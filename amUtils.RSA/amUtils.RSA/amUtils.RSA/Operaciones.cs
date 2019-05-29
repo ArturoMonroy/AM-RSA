@@ -5,11 +5,29 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace amUtils.RSA
 {
     public class Operaciones
     {
+
+        public static string Firma(string PEM, string data)
+        {
+            string signature;
+            int n = PEMToX509.Firma(PEM, data, out signature);
+
+            return string.Format("{0},{1}", n, signature);
+        }
+
+        public static int Firma(string PEM, string data, out string signature)
+        {
+
+            return PEMToX509.Firma(PEM, data, out signature);
+        }
 
         public static string Genera(string tipo, int longitud){
            string llavePrivada, llavePublica= "";
@@ -74,63 +92,53 @@ namespace amUtils.RSA
             RSAEncryptionPadding padding = System.Security.Cryptography.RSAEncryptionPadding.Pkcs1;
             Encoding encoding = System.Text.Encoding.ASCII;
 
-            try
+            switch (tipo.Trim().ToUpper())
             {
-                switch (tipo.Trim().ToUpper())
-                {
-                    case "XML":
-                        if (encriptar)
-                        {
-                            RsaXmlUtil rsaXmlUtil = new RsaXmlUtil(encoding, llave, null, longitud);
-                            result = rsaXmlUtil.Encrypt(texto, padding);
-                        }
-                        else
-                        {
-                            RsaXmlUtil rsaXmlUtil = new RsaXmlUtil(encoding, "", llave, longitud);
-                            result = rsaXmlUtil.Decrypt(texto, padding);
+                case "XML":
+                    if (encriptar)
+                    {
+                        RsaXmlUtil rsaXmlUtil = new RsaXmlUtil(encoding, llave, null, longitud);
+                        result = rsaXmlUtil.Encrypt(texto, padding);
+                    }
+                    else
+                    {
+                        RsaXmlUtil rsaXmlUtil = new RsaXmlUtil(encoding, "", llave, longitud);
+                        result = rsaXmlUtil.Decrypt(texto, padding);
 
-                        }
+                    }
 
-                        break;
+                    break;
 
-                    case "PKCS1":
-                        if (encriptar)
-                        {
-                            RsaPkcs1Util rsaPkcs1Util = new RsaPkcs1Util(encoding, llave, null, longitud);
-                            result = rsaPkcs1Util.Encrypt(texto, padding);
-                        }
-                        else
-                        {
-                            RsaPkcs1Util rsaPkcs1Util = new RsaPkcs1Util(encoding, "", llave, longitud);
-                            result = rsaPkcs1Util.Decrypt(texto, padding);
-                        }
+                case "PKCS1":
+                    if (encriptar)
+                    {
+                        RsaPkcs1Util rsaPkcs1Util = new RsaPkcs1Util(encoding, llave, null, longitud);
+                        result = rsaPkcs1Util.Encrypt(texto, padding);
+                    }
+                    else
+                    {
+                        RsaPkcs1Util rsaPkcs1Util = new RsaPkcs1Util(encoding, "", llave, longitud);
+                        result = rsaPkcs1Util.Decrypt(texto, padding);
+                    }
 
-                        break;
+                    break;
 
-                    case "PKCS8":
-                        if (encriptar)
-                        {
-                            RsaPkcs8Util rsaPkcs8Util = new RsaPkcs8Util(encoding, llave, null, longitud);
-                            result = rsaPkcs8Util.Encrypt(texto, padding);
-                        }
-                        else
-                        {
-                            RsaPkcs8Util rsaPkcs8Util = new RsaPkcs8Util(encoding, "", llave, longitud);
-                            result = rsaPkcs8Util.Decrypt(texto, padding);
-                        }
-                        break;
+                case "PKCS8":
+                    if (encriptar)
+                    {
+                        RsaPkcs8Util rsaPkcs8Util = new RsaPkcs8Util(encoding, llave, null, longitud);
+                        result = rsaPkcs8Util.Encrypt(texto, padding);
+                    }
+                    else
+                    {
+                        RsaPkcs8Util rsaPkcs8Util = new RsaPkcs8Util(encoding, "", llave, longitud);
+                        result = rsaPkcs8Util.Decrypt(texto, padding);
+                    }
+                    break;
 
-                    default:
-                        throw new Exception(string.Format("Genera no conoce tipo [{0}]", tipo));
-                }
+                default:
+                    throw new Exception(string.Format("DeCo no conoce tipo [{0}]", tipo));
             }
-            catch (Exception e)
-            {
-                
-                result = e.Message + '-' + e.InnerException;
-            }
-            
-
 
             return result;
         }
