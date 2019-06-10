@@ -22,29 +22,24 @@ namespace amUtils.RSA
 
             int result = -1;
             signature = "";
-            try
-            {
-                byte[] signed;
-                byte[] b = System.Text.Encoding.Default.GetBytes(data);
+            
+            byte[] signed;
+            byte[] b = System.Text.Encoding.Default.GetBytes(data);
 
-                RSACryptoServiceProvider rsa = Convert(PEM);
+            RSACryptoServiceProvider rsa = Convert(PEM);
 
-                if (rsa == null)
-                    throw new Exception("Error al obtener RSACryptoServiceProvider");
+            if (rsa == null)
+                throw new Exception("Error al obtener RSACryptoServiceProvider");
                                
-                //Se duplica el RSA, por algun motivo NO permite hacer sign sha256
-                RSACryptoServiceProvider rsaFinal = new RSACryptoServiceProvider();
-                RSAParameters Key = rsa.ExportParameters(true);
-                rsaFinal.ImportParameters(Key);
+            //Se duplica el RSA, por algun motivo NO permite hacer sign sha256
+            RSACryptoServiceProvider rsaFinal = new RSACryptoServiceProvider();
+            RSAParameters Key = rsa.ExportParameters(true);
+            rsaFinal.ImportParameters(Key);
 
-                signed = rsaFinal.SignData(b, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                signature  = System.Convert.ToBase64String(signed);
-                result = signature.Length;
-            }
-            catch (Exception e) {
-                signature = e.Message;
-            }
-
+            signed = rsaFinal.SignData(b, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            signature  = System.Convert.ToBase64String(signed);
+            result = signature.Length;
+            
             return result;
 
         

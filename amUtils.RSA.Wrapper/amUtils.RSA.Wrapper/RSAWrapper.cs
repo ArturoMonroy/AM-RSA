@@ -8,6 +8,7 @@ using System.Text;
 
 namespace amUtils.RSA.DLL
 {
+
     public class RSAWrapper
     {
 
@@ -15,15 +16,43 @@ namespace amUtils.RSA.DLL
         static string DLL = "amUtils.RSA.dll";
         static Assembly assembly =  Assembly.LoadFrom(DLL);
         static Type type = assembly.GetType("amUtils.RSA.Operaciones");
+
+
+        //Implemente eso a modo de pasarle la instancia de Operaciones
+        //Pero ya perdi mucho tiempo y aunque compila cuando exporto en Delphi
+        //No logro acceder a los metodos correctamente
+        //El problema claramente esta en que deberia pasar la interfaz IOperaciones
+        // Dejare la implementacion
+        //public static void CreaObjeto([MarshalAs(UnmanagedType.Interface)] out IOperaciones objeto)
         
+        [DllExport(CallingConvention = CallingConvention.Cdecl)]
+        public static void CreaObjeto([MarshalAs(UnmanagedType.Interface)] out object objeto)
+        {
+
+            objeto = null;
+            try
+            {
+
+                MethodInfo methodInfo;
+                methodInfo = type.GetMethod("creaObjeto");
+
+                objeto = methodInfo.Invoke(null, null);
+                
+            }
+            catch (Exception)
+            {
+                
+            }            
+        }
+
         [DllExport("Version", CallingConvention = CallingConvention.Cdecl)]
         public static void Version([MarshalAs(UnmanagedType.BStr)] out string version)
         {
-            version = "1.0.0.1";
+            version = "2.0.0.1";
         }
 
-        [DllExport("Firma", CallingConvention = CallingConvention.Cdecl)]
-        public static int Firma(IntPtr PEM_P, IntPtr data_P, [MarshalAs(UnmanagedType.BStr)] out string signature)
+        [DllExport("FirmaPEM", CallingConvention = CallingConvention.Cdecl)]
+        public static int FirmaPEM(IntPtr PEM_P, IntPtr data_P, [MarshalAs(UnmanagedType.BStr)] out string signature)
         {
             string result;
             string[] a;
@@ -37,7 +66,7 @@ namespace amUtils.RSA.DLL
                 PEM = Marshal.PtrToStringAuto(PEM_P);
                 data = Marshal.PtrToStringAuto(data_P);
 
-                methodInfo = type.GetMethod("Firma", new Type[] { typeof(string), typeof(string) });
+                methodInfo = type.GetMethod("FirmaPEMNTS", new Type[] { typeof(string), typeof(string) });
 
                 result = (string)methodInfo.Invoke(null, new object[] { PEM, data });
 
@@ -45,6 +74,7 @@ namespace amUtils.RSA.DLL
                 int.TryParse(a[0], out n);
                 signature = a[1];
 
+                n = 0;
             }
             catch (Exception e)
             {
@@ -69,8 +99,8 @@ namespace amUtils.RSA.DLL
     		    tipo = Marshal.PtrToStringAuto(tipo_P);
             
                 MethodInfo methodInfo;
-                            
-                methodInfo = type.GetMethod("Genera", new Type[] { typeof(string), typeof(int) });
+
+                methodInfo = type.GetMethod("GeneraNTS", new Type[] { typeof(string), typeof(int) });
 
                 result = (string)methodInfo.Invoke(null, new object[] { tipo, longitud });
 
@@ -107,7 +137,7 @@ namespace amUtils.RSA.DLL
                 tipo = Marshal.PtrToStringAuto(tipo_P);
                 llave = Marshal.PtrToStringAuto(llave_P);
 
-                methodInfo = type.GetMethod("DeCo", new Type[] { typeof(string), typeof(string), typeof(string), typeof(int), typeof(bool) });
+                methodInfo = type.GetMethod("DeCoNTS", new Type[] { typeof(string), typeof(string), typeof(string), typeof(int), typeof(bool) });
             
                 result = (string)methodInfo.Invoke(null, new object[] { texto, tipo, llave, longitud, encriptar });
 

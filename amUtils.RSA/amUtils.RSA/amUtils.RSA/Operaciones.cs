@@ -12,37 +12,50 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace amUtils.RSA
 {
-    public class Operaciones
+
+    //Crea una interfaz
+    //La finalidad es que la libreria sea SAFE-THREAD
+    //Obtienes un objeto y accedes a sus metodos
+    [ComVisible(true)]
+    [Guid("547B3FD6-38A0-4C13-9E6F-6221B7F83826"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface IOperaciones
+    {
+        int FirmaPEM(string PEM, string data, out string signature);
+
+        void Genera(string tipo, int longitud, out string llavePrivada, out string llavePublica);
+
+        string DeCo(string texto, string tipo, string llave, int longitud, bool encriptar);
+    }
+
+    //Los metodos estaticos con NTS indican NO-THREAD-SAFE
+    //Dejo los metodos estaticos a modo de retrocompatibilidad
+    public class Operaciones : IOperaciones
     {
 
-        public static string Firma(string PEM, string data)
+        public static IOperaciones creaObjeto()
         {
-            string signature;
-            int n = PEMToX509.Firma(PEM, data, out signature);
-
-            return string.Format("{0},{1}", n, signature);
+            return new Operaciones();
         }
 
-        public static int Firma(string PEM, string data, out string signature)
-        {
+        public int FirmaPEM(string PEM, string data, out string signature){
+            int result = -1;
+            signature = "";
+            try
+            {
 
-            return PEMToX509.Firma(PEM, data, out signature);
+                result = PEMToX509.Firma(PEM, data, out signature);
+            }
+            catch (Exception e)
+            {
+                signature = string.Format("Error no esperado el ejecutar 'FirmaPEM'. Error [{0}]", e.Message);
+                
+            }
+
+            return result;
+
         }
 
-        public static string Genera(string tipo, int longitud){
-           string llavePrivada, llavePublica= "";
-           string result = "";
-           
-           Genera(tipo, longitud, out llavePrivada, out llavePublica);
-
-           result = llavePrivada + ',' + llavePublica;
-
-           return result;
-            
-        }
-        
-        public static void Genera(string tipo, int longitud, out string llavePrivada, out string llavePublica)
-        {
+        public void Genera(string tipo, int longitud, out string llavePrivada, out string llavePublica){
             List<string> par;
             string test, ok;
             /*
@@ -78,16 +91,15 @@ namespace amUtils.RSA
                 ok = DeCo(test, tipo, llavePrivada, longitud, false);
             }
             catch (Exception e)
-            {                
+            {
                 Genera(tipo, longitud, out llavePrivada, out llavePublica);
                 test = DeCo("TEST", tipo, llavePublica, longitud, true);
-                ok = DeCo(test, tipo, llavePrivada, longitud, false);       
+                ok = DeCo(test, tipo, llavePrivada, longitud, false);
             }
 
         }
 
-        public static string DeCo(string texto, string tipo, string llave, int longitud, bool encriptar)
-        {
+        public string DeCo(string texto, string tipo, string llave, int longitud, bool encriptar){
             string result = "";
             RSAEncryptionPadding padding = System.Security.Cryptography.RSAEncryptionPadding.Pkcs1;
             Encoding encoding = System.Text.Encoding.ASCII;
@@ -143,10 +155,59 @@ namespace amUtils.RSA
             return result;
         }
 
+        #region metodos estaticos
+
+        public static int FirmaNTS(string PEM, string data, out string signature)
+        {
+
+            var a = new Operaciones();
+            return a.FirmaPEM(PEM, data, out signature);
+        }
+   
+        public static void GeneraNTS(string tipo, int longitud, out string llavePrivada, out string llavePublica)
+        {
+
+            var a = new Operaciones();
+            a.Genera(tipo, longitud, out llavePrivada, out llavePublica);
+
+        }
+
+        public static string DeCoNTS(string texto, string tipo, string llave, int longitud, bool encriptar)
+        {
+
+            var a = new Operaciones();
+            return a.DeCo(texto, tipo, llave, longitud, encriptar);
+
+        }
+
+        public static string GeneraNTS(string tipo, int longitud)
+        {
+            string llavePrivada, llavePublica= "";
+            string result = "";
+               
+            GeneraNTS(tipo, longitud, out llavePrivada, out llavePublica);
+            
+            result = llavePrivada + ',' + llavePublica;
+            
+            return result;
+                
+        }
+                
+        public static string FirmaPEMNTS(string PEM, string data)
+        {
+            string signature;
+            int n = PEMToX509.Firma(PEM, data, out signature);
+            
+            return string.Format("{0},{1}", n, signature);
+        }
+
         public static string LlavePrivadaPKCS8_A_PKCS1(string llavePrivada)
         {
 
             return RsaKeyConvert.PrivateKeyPkcs8ToPkcs1(llavePrivada);
         }
+
+        #endregion
+  
     }
 }

@@ -4,9 +4,12 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Runtime.InteropServices;
 
 namespace amUtils.RSAExe
 {
+
+    
     class Program
     {
 
@@ -37,6 +40,25 @@ namespace amUtils.RSAExe
             for (int j = 0; j < b.Length; j++)
                 _bytes[a.Length + j] = b[j];
             
+            //Paso nuevo de crear un objeto
+            //IOperaciones misOperaciones;
+            unsafe {
+                long* ptr;
+                IntPtr ptr2;
+                object objeto;
+                CreaObjeto(out objeto, out ptr, out ptr2);
+
+                Console.WriteLine(string.Format("{0} {1} {2}", ptr2.ToString("X"), ptr2.ToInt64(), ptr2.ToString()));
+
+                ptr2=  new IntPtr ();
+
+                
+                string v;
+                //((Operaciones)ptr).Firma("", "", out v);
+
+                
+            }
+            
             //Primer paso
             string data = System.Convert.ToBase64String(a) + '.' + System.Convert.ToBase64String(b);           
             string signature;
@@ -58,7 +80,7 @@ namespace amUtils.RSAExe
             "-----END RSA PRIVATE KEY-----";
 
             Console.WriteLine("FIRMA (JWT)...");
-            Firma(PEM, data, out signature);
+            FirmaPEM(PEM, data, out signature);
             Console.WriteLine( signature );
                         
             /////////// FIN JWT
@@ -118,21 +140,21 @@ namespace amUtils.RSAExe
 
         }
        
-       public static int Firma(string PEM, string data, out string signature)
+       public static int FirmaPEM(string PEM, string data, out string signature)
        {
            string result;
            string [] a;
            int n  = -1;
            MethodInfo methodInfo;
 
-           methodInfo = type.GetMethod("Firma", new Type[] { typeof(string) , typeof(string) });
+           methodInfo = type.GetMethod("FirmaPEMNTS", new Type[] { typeof(string) , typeof(string) });
 
            result =  (string)methodInfo.Invoke(null, new object[] { PEM, data });
 
            a = result.Split(',');
            int.TryParse(a[0], out n);
            signature = a[1];
-                      
+           
            return n;
 
        }
@@ -151,7 +173,7 @@ namespace amUtils.RSAExe
         {
             MethodInfo methodInfo;
 
-            methodInfo = type.GetMethod("DeCo", new Type[] { typeof(string), typeof(string), typeof(string), typeof(int), typeof(bool) });
+            methodInfo = type.GetMethod("DeCoNTS", new Type[] { typeof(string), typeof(string), typeof(string), typeof(int), typeof(bool) });
 
             return (string)methodInfo.Invoke(null, new object[] { texto, tipo, llave, longitud, encriptar });
 
@@ -165,12 +187,43 @@ namespace amUtils.RSAExe
             string result;
             string[] par;
 
-            methodInfo = type.GetMethod("Genera", new Type[] { typeof(string), typeof(int) });
+            methodInfo = type.GetMethod("GeneraNTS", new Type[] { typeof(string), typeof(int) });
 
             result = (string)methodInfo.Invoke(null, new object[] { tipo, longitud });
             par = result.Split(new char[] { ',' });
             llavePrivada = par[0];
             llavePublica = par[1];
+
+        }
+
+        //public static void CreaObjeto(out IOperaciones miOperaciones)
+        public unsafe static void CreaObjeto( out object objeto, out long* ptr, out IntPtr ptr2)
+        {
+
+            ptr = null;
+            ptr2 = new IntPtr();
+            objeto = null;
+
+            try
+            {
+                MethodInfo methodInfo;
+                methodInfo = type.GetMethod("creaObjeto");
+
+                objeto = methodInfo.Invoke(null, null);
+
+                TypedReference tr = __makeref(objeto);                                
+                //IntPtr aptr = **(IntPtr**)(&tr);
+                ptr = (long*)(&tr);
+
+                void* pv = ptr;
+
+                ptr2 = (IntPtr)pv;                      
+                
+            }
+            catch (Exception e)
+            {
+                var error = e.Message;
+            }
 
         }
 

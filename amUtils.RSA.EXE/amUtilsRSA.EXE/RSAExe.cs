@@ -88,7 +88,7 @@ namespace amUtilsRSA.EXE
                         if (args.Length >= 4)
                             int.TryParse(args[3], out longitud);
 
-                        Operaciones.Genera(tipo, longitud, out llavePrivada, out llavePublica);
+                        Operaciones.GeneraNTS(tipo, longitud, out llavePrivada, out llavePublica);
                         result = llavePrivada + llavePublica;
                         break;
 
@@ -101,7 +101,7 @@ namespace amUtilsRSA.EXE
                         if (args.Length >= 6)
                             int.TryParse(args[5], out longitud);
 
-                        result = Operaciones.DeCo(texto, tipo, llave, longitud, operacion.Equals("ENCRIPTA"));
+                        result = Operaciones.DeCoNTS(texto, tipo, llave, longitud, operacion.Equals("ENCRIPTA"));
 
                         break;
 
