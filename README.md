@@ -34,6 +34,10 @@
 
 `Follow the steps above you gonna get amUtils.RSA.dll, crypto.dll (both Any CPU) and amUtils.RSA.Wrapper.dll (or amUtils.RSA.Wrapperx32.dll depends of build you chose)` 
 
+## Metodo FirmaPEM
+`Usando archivo .pem, firmas el contenido en SHA256, util para generar JWT
+`With .pem, signed data using sha256; usefull to generate a JWT
+
 
 ### Breve historia / Summary
 ` Me vi en la necesidad de usar cifrado RSA en Delphi, la forma mas optima es usando una DLL ( no encontre APIs en Delphi ).` 
